@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>CRIME W</title>
+<script type="text/javascript" src="JavaScript/map.js"></script>
+<script type="text/javascript" src="JavaScript/phone.js"></script>
+<link rel="stylesheet" href="css/layout.css" type="text/css" media="all">
+
+<style>
+#mainimg{
+	position:relative;
+  cursor:pointer;
+	}
+#mainimg :hover{
+	cursor:url(images/small_hand.png);
+	}
+#textbar{
+  position:relative;
+  top:-210px;
+  display: none;
+	}
+
+#main{
+  cursor:url(images/small_hand.png);
+}
+
+</style>
+
+<!--텍스트 박스 & 패턴배경 //class-->
+<style> 
+ .text_box {
+  width:900px;
+  height:190px;
+  background-color:#000;
+  filter: Alpha(opacity:40);
+  opacity:0.5;
+  font-size:15pt;
+  font-style:normal;
+  font-family:돋움;
+  color:#fff;
+  overflow:hidden;
+  text-align:center;
+  z-index:55;
+
+   }
+  .phone_img
+  {
+  position:relative;
+  background-image:url(./images/smart_phone.jpg);
+  width:900px;
+  height:600px;
+  }
+</style>
+
+<!--텍스트 박스 & 패턴배경 & 메모장 //id-->
+<style>
+ #test_box {
+  width:900px;
+  height:600px;
+  position:relative;
+  background-color:#000;
+  font-size:15pt;
+  font-style:normal;
+  font-family:돋움;
+  color:#fff;
+  overflow:hidden;
+  text-align:center;
+  display: none;
+ }
+ 
+#phone_img
+{
+  position:relative;
+  background-image:url(images/smart_phone2.png);
+  z-index:90;
+  width:900px;
+  height:600px;
+  background-color:#000;
+  font-size:15pt;
+  font-style:normal;
+  font-family:돋움;
+  color:#fff;
+  overflow:hidden;
+}
+#memo_25698
+{
+  position:relative;
+  background-image:url(images/memo_25698.jpg);
+  z-index:90;
+  width:900px;
+  height:600px;
+  overflow:hidden;
+   }
+</style>
+
+<!--용의자 리스트, 단서리스트(STAGE1에서는 사용하지 못하게 막음) 
+    각 버튼 레이아웃 -->
+<style>
+.suspected_person_button{
+	width:120px;
+	height:40px;
+	padding:5px 6px 3px;
+	-webkit-border-radius:16px;
+	-moz-border-radius::16px;
+	border:2px solid #ccc;
+	font-family:"Arial Black", Gadget, sans-serif;
+	color:#fff;
+	text-align:center;
+	cursor: pointer;
+}
+.hand_button{
+background: url(images/small_hand.png) no-repeat;
+border: none;
+width: 30px;
+height: 40px;
+cursor:url('images/small_hand.cur'),auto;
+}
+.magnifying_glass_button{
+background: url(images/small_magnifying_glass.png) no-repeat;
+border: none;
+width: 40px;
+height: 40px;
+cursor:url('images/small_magnifying_glass.cur'),auto;
+}
+.footprint_button{
+background: url(images/footprint_small.png) no-repeat;
+border: none;
+width: 30px;
+height: 40px;
+cursor:url('images/footprint_small.cur'),auto;
+}
+</style>
+
+<script>
+//음악 재생
+var bgm = new Audio('');
+if(!bgm.canPlayType('audio/mp3')) alert('브라우저가 ogg 재생을 지원하지 않습니다.');
+else {
+	var bgm_url = 'musics/Tobaggan.mp3';
+	bgm = new Audio(bgm_url);
+	bgm.play();
+}
+</script>
+<script>
+var cursorState = "";
+var modalWin = new CreateModalPopUpObject(); //JavaScript/ModalPopupWindow.js 내부 함수
+                                              //팝업 창 초기화 및 디자인 하는 부분
+ modalWin.SetCloseButtonImagePath("images/remove.gif"); //종료 버튼 이미지 불러오기
+
+function hand_button_click() //손바닥 버튼 클릭 이벤트
+{
+  var cur = document.getElementById("mainimg");
+  cur.style.cursor = "url(images/small_hand.cur),auto";
+  cursorState = "hand";
+  //alert("hand_button");
+}
+
+function magnifying_glass_button_click() //돋보기 버튼 클릭이벤트
+{
+    var cur = document.getElementById("mainimg");
+    cur.style.cursor = "url(images/small_magnifying_glass.cur),auto";
+    cursorState = "glass";
+}
+
+function footprint_button_click() //발 버튼 클릭이벤트
+{  
+    var cur = document.getElementById("mainimg");
+    cur.style.cursor = "url(images/footprint_small.cur),auto";
+    cursorState = "foot";
+}
+
+function clue_list_click() //단서 리스트 클릭이벤트
+{//320,470 크기의 팝업 창을 불러온다
+  //modalWin.ShowURL('Clue_page.html',320,470,'단서 List',null,modalWin.HideModalPopUp()); 
+ 
+
+  var chatting2 = document.getElementById("test_box");
+  chatting2.style.display="none"
+
+}
+//현재 Clue_page와 Suspected_page 내부 구현되지 않은 상태
+function suspected_person_list_click() //용의자 리스트 클릭 이벤트
+{//320,470 크기의 팝업 창을 불러온다
+ //modalWin.ShowURL('Suspected_page.html',320,470,'용의자 List',null, modalWin.HideModalPopUp()); 
+}
+
+function suspected_person_list(name)
+{
+	var person_name;
+	var person_image;
+	var div = document.getElementById("suspected_person_list");
+}
+
+function hideMap()
+{
+     var displayMap = document.getElementById("myImage");
+     displayMap.style.display='none';
+}
+function displayMap()
+{
+     var displayMap = document.getElementById("myImage");
+     displayMap.style.display='block';
+}
+</script>
+
+
+<script language="JavaScript"> 
+<!-- 
+/*이미지 객체 선언*/
+        var map = null;
+        var oldmap ;   //이전 맵 
+        var oldNo;
+        var imgMax;		              //이미지 크기
+        var curImgNo = 0;					  //현재 이미지 번호
+        var curMove = 0;
+        var nextImgNo =null;				//다음 이미지 번호
+        var fadeStart = false;			//fade 상태
+        var curImgLevel = 1;				//현재 이미지 투명도 
+        var nextImgLevel = 0;				//다음 이미지 투명도
+        var start = false;
+       // var ImgArray;
+        var flag = false;
+        function changeArray(ImgArray,dir)
+        {
+            var temp;
+            oldmap = map;         //현재 맵을 저장
+            map = new Array();    //맵을 초기화
+            map = ImgArray;       //맵을 ImgArray로 바꾼다
+            imgMax = map.length - 1;  //imgMax를 맵의 크기만큼
+
+            temp = curImgNo;      //curImgNo를 저장
+            if(dir == "next"){    //next 방향이면
+              curImgNo = 0;       //curImgNo를 0으로 초기화
+            }
+            else
+            {
+              curImgNo = oldNo;   //curImgNo를 전 맵에서 저장해놓았던 curImgNo로 변경 
+            }
+            nextImgNo = null;     //nextImgNo 초기화
+            curImgLevel = 1;      //현재이미지 투명도
+            nextImgLevel = 0;     //다음이미지 투명도
+            oldNo = temp;         //맵 변경하기 전 curImgNo 를 oldNo에 저장.
+        }
+/* 현재 이미지를 제외한 나머지 이미지 모두 투명하게 초기화-*/
+ 		function init(){
+        var i;
+        createMap();
+        //document.getElementById("iframe").style.display = "none";
+        map = nestnetMap;
+        imgMax = map.length - 1;  //imgMax를 맵의 크기만큼
+        for (i = 0; i <= imgMax; i++) {
+                    changeOpacity(map[i].img, 0);   //현재 이미지 아니면 투명
+    	   }
+
+        changeOpacity(map[curImgNo].img, 1); 
+        chatArray = map[0].chatContent;
+        showInfo();
+ 		}
+    function Start(){
+        document.getElementById("otherImage").style.display = "none";
+        document.getElementById("canvas").style.display = "none";
+        document.getElementById("textbar").style.display = "none";
+        document.getElementById("myImage").src = "./images/start.jpg";
+
+    }
+  function getEvent(){
+      chatArray = Professor;
+      showInfo();
+    }
+    function checkLoad(moveNo)
+    {
+        if(map == nestnetMap)
+        {
+            if(curImgNo == 2)
+            {
+               switch(moveNo)
+               {
+                  // case 0:
+                  //  changeArray(corridorMap,"next");
+                  //  break;
+                  case 1:
+                    changeArray(corridorMap,"next");
+                   break;
+                }
+            }
+            if(curImgNo == 5)
+            {
+              switch(moveNo)
+              {
+                case 0:
+                  changeArray(sammaruMap,"next");
+                  break;
+                case 1:
+                  changeArray(cabinetMap,"next");
+                  break;
+              }
+            }
+        }
+        else if(map == corridorMap)
+        {
+          if(moveNo==1){
+              if(curImgNo == 1) ;//계단 1
+                //changeArray(sammaruMap,"next");
+              else if(curImgNo == 3) //복도 5-1 엘레베이터
+               {     
+                  //alert("elevatorMap");
+                  changeArray(elevatorMap,"next");
+              }
+              else if(curImgNo == 4) ;//계단 2
+            }
+        }
+        else if(map == cabinetMap)
+        {
+              changeArray(cabinetMap,"next");
+        }
+        else
+          ;
+    }
+  
+    function clickImg(){
+
+        if((event.offsetX >=348 &&event.offsetX<=552)&&(event.offsetY >= 432 && event.offsetY <= 468)&&start == false)
+        {
+           // alert("누름");
+            start = true;
+            init();
+            return ;
+        }
+        if(map == corridorMap && curImgNo == imgMax-1 &&!flag)
+        {
+            var temp = new Array();
+            temp[0] = "류교수님 교수실에 도착했다.";
+            temp[1] = "류교수님이 나와 계셨다.";
+            chatArray = temp;
+            showInfo();
+            startImg("next");
+            return ;
+
+        }
+        if(map == corridorMap && curImgNo == imgMax-1 &&flag)
+        {
+            var temp = new Array();
+            temp[0] = "류교수님은 지금 바쁘시다.";
+            temp[1] = "사건을 모두 해결하면 찾아가자.";
+            chatArray = temp;
+            showInfo();
+            return ;
+
+        }
+        if(map == corridorMap && curImgNo == imgMax && chatIndex!=(chatSize)&&!flag)
+        {
+          //alert("corridorMap");
+          // if(chatSize == chatIndex)
+          //   {
+          //     alert(chatSize);
+          //     flag = true;
+          //     return;
+          //   }
+          getEvent();
+          return ;
+        }
+
+        if(cursorState=="foot")
+        {
+            var sx = map[curImgNo].move[0].move_cor.sx;
+            var sy = map[curImgNo].move[0].move_cor.sy;
+            var fx = map[curImgNo].move[0].move_cor.fx;
+            var fy = map[curImgNo].move[0].move_cor.fy;
+            
+            if((event.offsetX>=sx&&event.offsetX<=fx)&&(event.offsetY>=sy&&event.offsetY<=fy))
+              {  
+                 // alert(curImgNo);
+                  checkLoad(0);
+                  startImg("next");
+              }
+            else if(map[curImgNo].move[1]!=null)
+            {
+              var sx_2 = map[curImgNo].move[1].move_cor.sx;
+              var sy_2 = map[curImgNo].move[1].move_cor.sy;
+              var fx_2 = map[curImgNo].move[1].move_cor.fx;
+              var fy_2 = map[curImgNo].move[1].move_cor.fy;
+              if((event.offsetX>=sx_2&&event.offsetX<=fx_2)&&(event.offsetY>=sy_2&&event.offsetY<=fy_2))
+              {  
+                  checkLoad(1);
+                  startImg("next");
+              }
+            }
+        }
+        else if(cursorState=="hand")
+        {
+            var sx = map[curImgNo].get[0].get_cor.sx;
+            var sy = map[curImgNo].get[0].get_cor.sy;
+            var fx = map[curImgNo].get[0].get_cor.fx;
+            var fy = map[curImgNo].get[0].get_cor.fy;
+            if((event.offsetX>=sx&&event.offsetX<=fx)&&(event.offsetY>=sy&&event.offsetY<=fy))
+              {
+                  if( map[curImgNo].get[0].item == "phone")
+                  {
+                    //alert("핸드폰을 얻었습니다!");
+                    item = "phone";
+                    chatArray = "핸드폰을 획득하였습니다.";
+                    showChat();
+                    change2 = 0;
+
+                  }
+                    
+              }
+            if(map[curImgNo].get[1]!=null)
+            {
+              var sx_2 = map[curImgNo].get[1].get_cor.sx;
+              var sy_2 = map[curImgNo].get[1].get_cor.sy;
+              var fx_2 = map[curImgNo].get[1].get_cor.fx;
+              var fy_2 = map[curImgNo].get[1].get_cor.fy;
+              if((event.offsetX>=sx_2&&event.offsetX<=fx_2)&&(event.offsetY>=sy_2&&event.offsetY<=fy_2))
+              {  
+                  if( map[curImgNo].get[1].item == "bag")
+                   { 
+
+                        //alert("memo");
+                        item = "memo";
+                        chatArray = "메모를 획득하였습니다.";
+                        showChat();
+
+                        //메모 내용 보여주기();
+                  }
+              }
+            }
+
+            //showInfo
+        }
+        else if(cursorState=="glass")
+        {
+            var sx = map[curImgNo].get[0].get_cor.sx;
+            var sy = map[curImgNo].get[0].get_cor.sy;
+            var fx = map[curImgNo].get[0].get_cor.fx;
+            var fy = map[curImgNo].get[0].get_cor.fy;
+            if((event.offsetX>=sx&&event.offsetX<=fx)&&(event.offsetY>=sy&&event.offsetY<=fy))
+              {
+                 if( map[curImgNo].get[0].item == "phone")
+                  {
+                    //alert("핸드폰을 얻었습니다!");
+                    item = "phone";
+                    var temp = new Array();
+                    temp[0] = "어? 내 핸드폰이다."
+                    chatArray = temp;
+                    showInfo();
+                    //change2 = 0;
+                  }   
+              }
+             if(map[curImgNo].get[1]!=null)
+            {
+              var sx_2 = map[curImgNo].get[1].get_cor.sx;
+              var sy_2 = map[curImgNo].get[1].get_cor.sy;
+              var fx_2 = map[curImgNo].get[1].get_cor.fx;
+              var fy_2 = map[curImgNo].get[1].get_cor.fy;
+              if((event.offsetX>=sx_2&&event.offsetX<=fx_2)&&(event.offsetY>=sy_2&&event.offsetY<=fy_2))
+              {  
+                  if( map[curImgNo].get[1].item == "bag")
+                   { 
+                        var tempArray = new Array();
+                        tempArray[0] = "가방 여기 있었구나!";
+                        tempArray[1] = "뭔가.. 가방안에 메모가 있는거 같다.";
+                        //alert("memo");
+                        chatArray = tempArray;
+                        showInfo();
+                        //메모 내용 보여주기();
+                  }
+              }
+            }
+
+        }
+        else
+          ;
+    }
+/*이미지 전환 시작-*/
+        function startImg(dir)
+        {
+        	//fade 중이라면 중지
+            // alert(fadeStart);
+            if (fadeStart == true) return;
+            //방향이 'prev'라면 다음 이미지 번호를 하나 감소시키고 
+            if( dir == "prev" ) 
+            {
+                nextImgNo = curImgNo - 1;
+               //다음 이미지 번호가 0보다 작으면 다음 이미지 번호를 마지막 번호로 변환
+                if ( nextImgNo < 0 ) {
+                  //alert(map);
+                  changeArray(oldmap,"prev");
+                }
+            }
+            //방향이 'next'라면 다음 이미지 번호를 하나 증가시키고 
+            else if( dir == "next" ) 
+            {
+                nextImgNo = curImgNo + 1;
+                // alert(nextImgNo);
+                //다음 이미지 번호가 마지막 번호보다 크면 다음 이미지 번호를 0번호로 변환
+                if ( nextImgNo > imgMax ) nextImgNo = 0;
+            }
+            else
+            {
+                fadeStart = false;
+                return;
+            }
+            fadeStart = true;
+            if(nextImgNo == null)
+              fadeStart = false;
+            //이전 이미지와 다음 이미지의 투명도를 바꾼다. 
+            changeOpacity(map[curImgNo].img, curImgLevel);
+            changeOpacity(map[nextImgNo].img, nextImgLevel);
+            //fade인아웃 효과 함수 호출
+            fadeInOutAction(dir);
+        }
+ 
+ /* fade인아웃 효과 함수*/
+    function fadeInOutAction(dir)
+        {
+        	//현재 이미지 투명도는 투명하게, 다음 이미지 투명도는 불투명하게
+            curImgLevel = curImgLevel - 0.1;
+            nextImgLevel = nextImgLevel + 0.1;
+            //현재 이미지 투명도가 0보다 작거나 같으면
+            if( curImgLevel <= 0 ) 
+            {
+            	//현재 이미지를 아예 투명하게 설정, 다음 이미지 투명도를 아예 불투명하게
+                changeOpacity(map[curImgNo].img, 0);
+                changeOpacity(map[nextImgNo].img, 1);
+                //"prev"를 눌렀다면 현재 이미지 번호를 하나 감소시킨다.
+                if(dir == "prev")
+                {
+                     curImgNo = curImgNo - 1;
+                     if(curImgNo < 0) curImgNo = 0;
+                    //curImgNo = imgMax;
+                }
+                //"next"를 눌렀다면 현재 이미지 번호를 하나 증가시킨다.
+                else
+                {
+                    curImgNo = curImgNo + 1;
+                    if (curImgNo > imgMax) curImgNo = 0;
+                }
+                //현재 이미지 투명도를 다시 완전 불투명하게 설정한다.
+                curImgLevel = 1;
+                //다음 이미지 투명도를 다시 완전 투명하게 설정한다.
+                nextImgLevel = 0;
+                //fade상태를 초기화
+                fadeStart = false;
+                //함수 진행 중지
+                return;
+            }
+            //바뀐 투명도를 changeOpactiry에서 서정한다.
+            changeOpacity(map[curImgNo].img, curImgLevel);
+            changeOpacity(map[nextImgNo].img, nextImgLevel);
+            //0.05초마다 fade인아웃 효과 함수 호출한다.
+            setTimeout(function () {
+                fadeInOutAction(dir);
+            }, 50);
+        }
+    function changeOpacity(id,level) 
+    {
+            var obj = document.getElementById('myImage');			//myImage 객체를 받아온다.
+            obj.src = id.src;										//myImage 이미지를 id 객체의 이미지로 변환.
+            obj.style.opacity = level; 								//myImage 객체의 투명도를 level값으로 설정한다.
+            obj.style.MozOpacity = level; 
+            obj.style.KhtmlOpacity = level;
+            obj.style.MsFilter = "'progid:DXImageTransform.Microsoft.Alpha(Opacity=" + (level * 100) + ")'";
+            obj.style.filter = "alpha(opacity=" + (level * 100) + ");"; 
+    }
+</script>
+
+
+<!--20150606 정유 스크립트(채팅창)-->
+<script>
+var chatting2;
+var imgChatting;
+var change2 = 1;
+var change = 1;
+var item;
+var chatIndex = 0;
+var chatSize = -1;
+var state;
+var chatArray;
+function InfoORChat()
+{
+  if(state == "Info")
+  {
+      showInfo();
+  }
+  else if(state == "Chat")
+  {
+      showChat();
+  }
+}
+function showInfo()
+{
+  //var chatArray2 = new Array();
+  //alert("사이즈"+chatArray.length);
+   
+   document.getElementById('textbar').style.display= "block";
+   chatting2 = document.getElementById('chat');
+   chatting2.style.display = "block";
+   if(chatIndex == chatSize)
+   {
+    if(chatArray == Professor)
+    {
+          flag = true;
+          changeArray(nestnetMap,"next");
+          document.getElementById('myImage').src = nestnetMap[0].img.src;
+          //startImg("next");
+          var temp = new Array();
+          temp[0] = "좋아. 먼저 단서를 찾아봐야겠다.";
+    }
+    //chatting2.style.display='block'
+     //chatting.className = "text_box_null";
+     document.getElementById('textbar').style.display= "none";
+      chatting2.style.display="none";
+      chatIndex = 0;
+      chatSize = -1;
+   }
+   else
+   {
+  //chatting2.value = "문자가 변경됩니다.2";
+     //chatting.className = "text_box";   
+    state = "Info";
+    chatting2.value = chatArray[chatIndex++];
+     chatSize = chatArray.length;
+    //  ce.type="none"
+   
+   }
+
+   
+}
+function showChat()
+{
+  document.getElementById('textbar').style.display= "block";
+  document.getElementById('chat').style.display ="block";
+  if(change2 == 1)
+   {
+        state = "Chat";
+        chatting2.value = chatArray;
+        change2 = 0;
+  }
+  else
+   { 
+      document.getElementById('textbar').style.display= "none";
+      document.getElementById('chat').style.display ="none";
+      if(item == "phone")
+      {
+         document.getElementById("canvas").style.display = "block";
+         hideMap();
+         phoneStart();
+       // document.getElementById("iframe").style.display = "block";
+      }
+      if(item == "memo")
+      {
+        var image = new Image();
+        image.src = "./images/memo_25698.jpg";
+        showOther(image);
+      }
+      change2 = 1;
+    //chatting2.value = "문자가 변경됩니다.2";
+     //chatting.className = "text_box";   
+    //  ce.type="none"
+   
+   }
+
+}
+
+function showOther(image)
+{
+   // alert(image);
+   imgChatting = document.getElementById("otherImage");
+   imgChatting.style.display = 'block';
+   
+     if(change == 1)
+     {
+      
+      hideMap();
+      imgChatting.src = image.src;
+       //chatting.className = "text_box_null";
+       change = 0;
+     }
+     else
+     {
+      //chatting2.value = "문자가 변경됩니다.2";
+       //chatting.className = "text_box";   
+      change = 1;
+      imgChatting.style.display = 'none';
+      displayMap();
+     }
+
+}
+</script>
+
+<style type="text/css" media="screen">
+    canvas, img { display:block; margin:1em auto; border:1px solid black; }
+    canvas { background:url(lotsalasers.jpg) }
+</style>
+
+</head>
+
+<body onload="Start()">
+
+<div class="container" >
+<header>
+<div></div>
+</header>
+ <div class="content" >
+   <center>
+   <div class="top_bar">
+   <ul >
+   <li><input class="suspected_person_button" type="button" align="left" value="용의자 List" onClick="suspected_person_list_click()"/></li>
+   <li><input class="suspected_person_button" type="button" align="left" value="단서 List" onClick="clue_list_click()"/></li>
+   </ul>
+   <ul>
+   <li><input class="hand_button" type="button" align="left" onClick="hand_button_click()"/></li>
+   <li><input class="magnifying_glass_button" type="button" align="left" onClick="magnifying_glass_button_click()"/></li>
+   <li><input class="footprint_button" type="button" align="left" onClick="footprint_button_click()"/>
+     <br />
+      </li>
+   </ul
+   ><p>
+           <button onClick="startImg('next')">Next</button>
+           <button onClick="startImg('prev')">Prev</button>
+        </p>
+   </div> 
+      <div id="mainimg">
+     <!--   <iframe src = "./d.html" onLoad="start()" id="iframe" width="930" height="620" display="none" frameborder="0"></iframe>-->
+        <canvas class="phone_img" id="canvas" width="900" height="600" display="none">
+        </canvas>
+          <input class="lists"  type="hidden" id="test_box" value="단서 리스트입니다." onClick="changeTest()" readonly>
+          <input type="hidden" id="test_box" value="임시" onClick="changeTest()" readonly> 
+          <img id = "otherImage" src="" width="900" height="600" onclick="showOther()" display="none"/>
+          <img id = "myImage" src="./images/네스트넷1.jpg" width="900" height="600" onclick="clickImg()"/>
+          <form id="textbar">
+          <input class="text_box" id="chat" value="임시 채팅" onClick="InfoORChat()" readonly />
+          </form>
+     </div>
+
+
+</div>
+
+   </center>
+   </div>
+<div>
+</body>
+</html>
